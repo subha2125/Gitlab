@@ -1,0 +1,67 @@
+default:
+  image: registry.gitlab.com/subhadipg/hr-system/mvn-jdk8-ant
+# Enable Secret-Detection from this template files comes with Gitlab itself
+# Include Dependency-Scanning template
+include:
+  #- template: Secret-Detection.gitlab-ci.yml
+  #- template: Dependency-Scanning.gitlab-ci.yml
+
+variables:
+  MAVEN_CLI_OPTS: "-B -s settings.xml"
+  #MAVEN_OPTS: "--batch-mode --errors --fail-at-end --show-version -DinstallAtEnd=true -DdeployAtEnd=true"
+
+stages:
+  - build_unittest
+  #- test
+  - codescan
+  - test
+
+build_unittest_job:
+  stage: build_unittest
+  script:
+    - echo $CI_COMMIT_TAG
+    - mvn $MAVEN_CLI_OPTS -e clean install -Dmaven.test.skip=true -U -Dlog4j.rootLogger=OFF
+    - 'mvn test org.jacoco:jacoco-maven-plugin:report'
+  artifacts:
+     paths:
+       - ./*/target
+     expire_in: 1 hour
+  only:
+    - master
+  tags:
+    - ci
+
+#unit_test:
+  #stage: test
+  #script:
+#    - mvn $MAVEN_CLI_OPTS test -nsu -T 3 -Dlog4j.rootLogger=OFF
+    #- mvn $MAVEN_CLI_OPTS test -nsu -Dlog4j.rootLogger=OFF -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn 
+  #artifacts:
+    #paths:
+      #- ./*/target
+    #expire_in: 2 hours
+  #dependencies:
+    #- build
+  #allow_failure: true
+  #only:
+    #- master
+  #tags:
+    #- ci
+
+sonarscan_job:
+  stage: codescan
+  image: registry.gitlab.com/subhadipg/hr-system/sonar-scanner
+  script:
+     - echo $SONARQUBE_LOGIN_KEY
+     - 'sonar-scanner -Dsonar.login="$SONARQUBE_LOGIN_KEY" -Dsonar.organization="$SONARQUBE_ORGANIZATION
+       " -Dsonar.host.url=https://sonarcloud.io'
+  allow_failure: true
+  only:
+    - master
+  tags:
+    - ci
+  #cache:
+    #paths:
+      #- /root/.sonar/cache
+
+
