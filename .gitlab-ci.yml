@@ -76,6 +76,7 @@ aws_s3_deploy_job:
     - ls -ltr
     - cd ..
     - mv HR-System-dist-$POM_VERSION HR-System-Aws-dist-$REL_VERSION
+    - sudo apt-get install zip
     - zip HR-System-Aws-dist-$REL_VERSION.zip HR-System-Aws-dist-$REL_VERSION
     - 'aws s3 cp HR-System-Aws-dist-$REL_VERSION.zip s3://onehr-solution'
     - cd $ROOT_DIR
