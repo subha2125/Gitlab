@@ -76,10 +76,10 @@ aws_s3_deploy_job:
     - ls -ltr
     - cd ..
     - mv HR-System-dist-$POM_VERSION HR-System-Aws-dist-$REL_VERSION
-    - tar -zcvf HR-System-Aws-dist-$REL_VERSION.tar.gz HR-System-Aws-dist-$REL_VERSION
-    - 'aws s3 cp HR-System-Aws-dist-$REL_VERSION.tar.gz s3://gonchu-bucket'
+    - zip HR-System-Aws-dist-$REL_VERSION.zip HR-System-Aws-dist-$REL_VERSION
+    - 'aws s3 cp HR-System-Aws-dist-$REL_VERSION.zip s3://onehr-solution'
     - cd $ROOT_DIR
-    - echo "export PKG_NAME=HR-System-Aws-dist-$REL_VERSION.tar.gz" > hr_s3_variable
+    - echo "export PKG_NAME=HR-System-Aws-dist-$REL_VERSION.zip" > hr_s3_variable
   artifacts:
     paths:
     - hr_s3_variable
